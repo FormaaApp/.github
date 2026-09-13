@@ -1,0 +1,4 @@
+{
+    "name": "Simple compose deploy",
+    "description": "Workflow for self github runner to sync repo, decrypt .env and deploy docker-compose file."
+}
