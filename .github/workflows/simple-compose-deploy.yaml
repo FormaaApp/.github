@@ -47,7 +47,6 @@ jobs:
           set -euo pipefail
 
           cd "$APP_DIR"
-          echo "PERFECT!!!!"
           docker compose up -d --build --remove-orphans
 
       - name: Cleanup
