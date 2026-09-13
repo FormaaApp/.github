@@ -19,23 +19,16 @@ jobs:
       - name: Set app directory
         run: echo "APP_DIR=$HOME/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
 
-      - name: Prepare repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ github.event.repository.name }}
+
+      - name: Clean repository
         run: |
           set -euo pipefail
 
-          echo "Repository: ${{ github.event.repository.name }}"
-          echo "Directory: $APP_DIR"
-
-          if [ ! -d "$APP_DIR/.git" ]; then
-            echo "Repository does not exist. Cloning..."
-            rm -rf "$APP_DIR"
-            git clone "${{ github.event.repository.clone_url }}" "$APP_DIR"
-          fi
-
           cd "$APP_DIR"
-
-          git fetch origin main
-          git reset --hard origin/main
           git clean -fd
 
       - name: Decrypt secrets
