@@ -1,0 +1,70 @@
+name: Simple docker compose deploy
+
+on:
+  workflow_call:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy ${{ github.event.repository.name }}
+    runs-on: self-hosted
+
+    steps:
+      - name: Set app directory
+        run: echo "APP_DIR=$HOME/$REPO_NAME" >> "$GITHUB_ENV"
+
+      - name: Prepare repository
+        run: |
+          set -euo pipefail
+
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Directory: $APP_DIR"
+
+          if [ ! -d "$APP_DIR/.git" ]; then
+            echo "Repository does not exist. Cloning..."
+            rm -rf "$APP_DIR"
+            git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" "$APP_DIR"
+          fi
+
+          cd "$APP_DIR"
+
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
+
+      - name: Decrypt secrets
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: |
+          set -euo pipefail
+
+          cd "$APP_DIR"
+          for encrypted_file in env/prod/.env*.enc; do
+            decrypted_file="${encrypted_file%.enc}"
+
+            echo "Decrypting: $encrypted_file"
+
+            sops --decrypt "$encrypted_file" > "$decrypted_file"
+            chmod 600 "$decrypted_file"
+          done
+
+      - name: Deploy
+        run: |
+          set -euo pipefail
+
+          cd "$APP_DIR"
+          docker compose up -d --build --remove-orphans
+
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ -d "$APP_DIR" ]; then
+            cd "$APP_DIR"
+            docker image prune -f
+          fi
