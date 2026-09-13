@@ -33,14 +33,18 @@ jobs:
           set -euo pipefail
 
           cd "$APP_DIR"
-          for encrypted_file in env/prod/.env*.enc; do
+          if [[ ! -f .sops.yaml ]]; then
+            echo "No .sops.yaml found, skipping decryption"
+            exit 0
+          fi
+          while IFS= read -r encrypted_file; do
             decrypted_file="${encrypted_file%.enc}"
 
             echo "Decrypting: $encrypted_file"
 
             sops --decrypt "$encrypted_file" > "$decrypted_file"
             chmod 600 "$decrypted_file"
-          done
+          done < <(find config -type f -name '*.enc' -print)
 
       - name: Deploy
         run: |
