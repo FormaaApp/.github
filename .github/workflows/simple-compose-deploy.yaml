@@ -43,7 +43,7 @@ jobs:
             echo "Decrypting: $encrypted_file"
 
             sops --decrypt "$encrypted_file" > "$decrypted_file"
-            chmod 600 "$decrypted_file"
+            chmod 444 "$decrypted_file"
           done < <(find config -type f -name '*.enc' -print)
 
       - name: Deploy
