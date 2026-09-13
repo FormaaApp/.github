@@ -38,7 +38,7 @@ jobs:
             exit 0
           fi
           while IFS= read -r encrypted_file; do
-            decrypted_file="${APP_DIR}/$(basename "${encrypted_file%.enc}")"
+            decrypted_file="${encrypted_file%.enc}"
 
             echo "Decrypting: $encrypted_file"
 
