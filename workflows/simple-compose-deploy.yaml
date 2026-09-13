@@ -1,0 +1,12 @@
+name: Simple docker compose deploy
+
+on:
+  push:
+    branches:
+      - $default-branch
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: FormaaApp/workflows/simple-compose-deploy.yaml@main
