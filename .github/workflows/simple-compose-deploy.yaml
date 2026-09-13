@@ -17,19 +17,19 @@ jobs:
 
     steps:
       - name: Set app directory
-        run: echo "APP_DIR=$HOME/$GITHUB_REPOSITORY" >> "$GITHUB_ENV"
+        run: echo "APP_DIR=$HOME/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
 
       - name: Prepare repository
         run: |
           set -euo pipefail
 
-          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Repository: ${{ github.event.repository.name }}"
           echo "Directory: $APP_DIR"
 
           if [ ! -d "$APP_DIR/.git" ]; then
             echo "Repository does not exist. Cloning..."
             rm -rf "$APP_DIR"
-            git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" "$APP_DIR"
+            git clone "${{ github.event.repository.clone_url }}" "$APP_DIR"
           fi
 
           cd "$APP_DIR"
