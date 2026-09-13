@@ -24,12 +24,11 @@ jobs:
         with:
           path: ${{ github.event.repository.name }}
 
-      - name: Clean repository
+      - name: Create deploy symlink
         run: |
           set -euo pipefail
 
-          cd "$APP_DIR"
-          git clean -fd
+          ln -sfn "$GITHUB_WORKSPACE" "$APP_DIR"
 
       - name: Decrypt secrets
         run: |
