@@ -1,4 +1,4 @@
-name: Simple docker compose deploy
+name: Simple 2 docker compose deploy
 
 on:
   push:
