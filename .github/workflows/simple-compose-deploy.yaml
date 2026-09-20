@@ -51,7 +51,7 @@ jobs:
           set -euo pipefail
 
           cd "$APP_DIR"
-          docker compose up -d --build --remove-orphans --wait --wait-timeout 60
+          docker compose up -d --build --remove-orphans --force-recreate --wait --wait-timeout 60
 
       - name: Cleanup
         if: always()
